@@ -10,39 +10,58 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet var tictacBtn1 : UIButton = nil
-    @IBOutlet var tictacBtn2 : UIButton = nil
-    @IBOutlet var tictacBtn3 : UIButton = nil
-    @IBOutlet var tictacBtn4 : UIButton = nil
-    @IBOutlet var tictacBtn5 : UIButton = nil
-    @IBOutlet var tictacBtn6 : UIButton = nil
-    @IBOutlet var tictacBtn7 : UIButton = nil
-    @IBOutlet var tictacBtn8 : UIButton = nil
-    @IBOutlet var tictacBtn9 : UIButton = nil
+    enum Player: Int {
+        case ComputerPlayer = 0, UserPlayer = 1
+    }
     
-    @IBOutlet var tictacImg1 : UIImageView = nil
-    @IBOutlet var tictacImg2 : UIImageView = nil
-    @IBOutlet var tictacImg3 : UIImageView = nil
-    @IBOutlet var tictacImg4 : UIImageView = nil
-    @IBOutlet var tictacImg5 : UIImageView = nil
-    @IBOutlet var tictacImg6 : UIImageView = nil
-    @IBOutlet var tictacImg7 : UIImageView = nil
-    @IBOutlet var tictacImg8 : UIImageView = nil
-    @IBOutlet var tictacImg9 : UIImageView = nil
+    //MARK: Variables
+    @IBOutlet weak var ticTacImage1: UIImageView!
+    @IBOutlet weak var ticTacImage2: UIImageView!
+    @IBOutlet weak var ticTacImage3: UIImageView!
+    @IBOutlet weak var ticTacImage4: UIImageView!
+    @IBOutlet weak var ticTacImage5: UIImageView!
+    @IBOutlet weak var ticTacImage6: UIImageView!
+    @IBOutlet weak var ticTacImage7: UIImageView!
+    @IBOutlet weak var ticTacImage8: UIImageView!
+    @IBOutlet weak var ticTacImage9: UIImageView!
+
     
+    @IBOutlet weak var resetBtn : UIButton!
+    @IBOutlet weak var userMessage : UILabel!
     
-    
-    @IBOutlet var resetBtn : UIButton = nil
-    @IBOutlet var userMessage : UILabel = nil
-    
-    var plays = Dictionary<Int,Int>()
+    var plays = [Int:Int]()
     var done = false
     
     var aiDeciding = false
     
+    var ticTacImages = [UIImageView]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        ticTacImages = [ticTacImage1, ticTacImage2, ticTacImage3, ticTacImage4, ticTacImage5, ticTacImage6, ticTacImage7 ,ticTacImage8 ,ticTacImage9]
+        
+        for imageView in ticTacImages {
+            
+            imageView.userInteractionEnabled = true
+            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "imageClicked:"))
+            
+        }
+    }
+    
+    //Gesture Reocgnizer method
+    func imageClicked(reco: UITapGestureRecognizer) {
+        
+        var imageViewTapped = reco.view as UIImageView
+        
+        if !plays[imageViewTapped.tag] && !aiDeciding && !done {
+            setImageForSpot(imageViewTapped.tag, player:.UserPlayer)
+        }
+        
+        checkForWin()
+        aiTurn()
+        
     }
     
     @IBAction func resetBtnClicked(sender : UIButton) {
@@ -52,42 +71,12 @@ class ViewController: UIViewController {
         reset()
     }
     
-    @IBAction func UIImageViewClicked(sender:UIButton){
+    func setImageForSpot(spot:Int,player:Player){
+        var playerMark = player == .UserPlayer ? "x" : "o"
+        plays[spot] = player.toRaw()
         
-        userMessage.hidden = true
-        if !plays[sender.tag] && !aiDeciding && !done {
-            setImageForSpot(sender.tag, player: 1)
-        }
-        
-        checkForWin()
-        aiTurn()
-    }
-    
-    func setImageForSpot(spot:Int,player:Int){
-        var playerMark = player == 1 ? "x" : "o"
-        plays[spot] = player
-        switch spot {
-        case 1:
-            tictacImg1.image = UIImage(named: playerMark)
-        case 2:
-            tictacImg2.image = UIImage(named: playerMark)
-        case 3:
-            tictacImg3.image = UIImage(named: playerMark)
-        case 4:
-            tictacImg4.image = UIImage(named: playerMark)
-        case 5:
-            tictacImg5.image = UIImage(named: playerMark)
-        case 6:
-            tictacImg6.image = UIImage(named: playerMark)
-        case 7:
-            tictacImg7.image = UIImage(named: playerMark)
-        case 8:
-            tictacImg8.image = UIImage(named: playerMark)
-        case 9:
-            tictacImg9.image = UIImage(named: playerMark)
-        default:
-            tictacImg5.image = UIImage(named: playerMark)
-        }
+        ticTacImages[spot].image = UIImage(named: playerMark)
+
     }
     
     func checkForWin(){
@@ -96,14 +85,14 @@ class ViewController: UIViewController {
         var theyWin = 0
         var whoWon = ["I":0,"you":1]
         for (key,value) in whoWon {
-            if ((plays[7] == value && plays[8] == value && plays[9] == value) || //across the bottom
-            (plays[4] == value && plays[5] == value && plays[6] == value) || //across the middle
-            (plays[1] == value && plays[2] == value && plays[3] == value) || //across the top
-            (plays[7] == value && plays[4] == value && plays[1] == value) || //down the left side
-            (plays[8] == value && plays[5] == value && plays[2] == value) || //down the middle
-            (plays[9] == value && plays[6] == value && plays[3] == value) || //down the right side
-            (plays[7] == value && plays[5] == value && plays[3] == value) || //diagonal
-                (plays[9] == value && plays[5] == value && plays[1] == value)){//diagonal
+            if ((plays[6] == value && plays[7] == value && plays[8] == value) || //across the bottom
+            (plays[3] == value && plays[4] == value && plays[5] == value) || //across the middle
+            (plays[0] == value && plays[1] == value && plays[2] == value) || //across the top
+            (plays[6] == value && plays[3] == value && plays[0] == value) || //down the left side
+            (plays[7] == value && plays[4] == value && plays[1] == value) || //down the middle
+            (plays[8] == value && plays[5] == value && plays[2] == value) || //down the right side
+            (plays[6] == value && plays[4] == value && plays[2] == value) || //diagonal
+                (plays[8] == value && plays[4] == value && plays[0] == value)){//diagonal
                     userMessage.hidden = false
                     userMessage.text = "Looks like \(key) won!"
                     resetBtn.hidden = false;
@@ -114,43 +103,43 @@ class ViewController: UIViewController {
     
     func reset() {
         plays = [:]
-        tictacImg1.image = nil
-        tictacImg2.image = nil
-        tictacImg3.image = nil
-        tictacImg4.image = nil
-        tictacImg5.image = nil
-        tictacImg6.image = nil
-        tictacImg7.image = nil
-        tictacImg8.image = nil
-        tictacImg9.image = nil
+        ticTacImage1.image = nil
+        ticTacImage2.image = nil
+        ticTacImage3.image = nil
+        ticTacImage4.image = nil
+        ticTacImage5.image = nil
+        ticTacImage6.image = nil
+        ticTacImage7.image = nil
+        ticTacImage8.image = nil
+        ticTacImage9.image = nil
     }
     
     func checkBottom(#value:Int) -> (location:String,pattern:String){
-        return ("bottom",checkFor(value, inList: [7,8,9]))
+        return ("bottom",checkFor(value, inList: [6,7,8]))
     }
     func checkMiddleAcross(#value:Int) -> (location:String,pattern:String){
-        return ("middleHorz",checkFor(value, inList: [4,5,6]))
+        return ("middleHorz",checkFor(value, inList: [3,4,5]))
     }
     func checkTop(#value:Int) -> (location:String,pattern:String){
-        return ("top",checkFor(value, inList: [1,2,3]))
+        return ("top",checkFor(value, inList: [0,1,2]))
     }
     func checkLeft(#value:Int) -> (location:String,pattern:String){
-        return ("left",checkFor(value, inList: [1,4,7]))
+        return ("left",checkFor(value, inList: [0,3,6]))
     }
     func checkMiddleDown(#value:Int) -> (location:String,pattern:String){
-        return ("middleVert",checkFor(value, inList: [2,5,8]))
+        return ("middleVert",checkFor(value, inList: [1,4,7]))
     }
     func checkRight(#value:Int) -> (location:String,pattern:String){
-        return ("right",checkFor(value, inList: [3,6,9]))
+        return ("right",checkFor(value, inList: [2,5,8]))
     }
     func checkDiagLeftRight(#value:Int) -> (location:String,pattern:String){
-        return ("diagRightLeft",checkFor(value, inList: [3,5,7]))
+        return ("diagRightLeft",checkFor(value, inList: [2,4,6]))
     }
     func checkDiagRightLeft(#value:Int) -> (location:String,pattern:String){
-        return ("diagLeftRight",checkFor(value, inList: [1,5,9]))
+        return ("diagLeftRight",checkFor(value, inList: [0,4,8]))
     }
     
-    func checkFor(value:Int, inList:Int[]) -> String {
+    func checkFor(value:Int, inList:[Int]) -> String {
         var conclusion = ""
         for cell in inList {
             if plays[cell] == value {
@@ -186,37 +175,29 @@ class ViewController: UIViewController {
         switch location {
             case "top":
                 if pattern == leftPattern {
-                    return 1
+                    return 0
                 }else if pattern == rightPattern{
-                    return 3
-                }else{
                     return 2
+                }else{
+                    return 1
                 }
             case "bottom":
                 if pattern == leftPattern {
-                    return 7
+                    return 6
                 }else if pattern == rightPattern{
-                    return 9
-                }else{
                     return 8
+                }else{
+                    return 7
                 }
             case "left":
                 if pattern == leftPattern {
-                    return 1
+                    return 0
                 }else if pattern == rightPattern{
-                    return 7
+                    return 6
                 }else{
-                    return 4
+                    return 3
                 }
             case "right":
-                if pattern == leftPattern {
-                    return 3
-                }else if pattern == rightPattern{
-                    return 9
-                }else{
-                    return 6
-                }
-            case "middleVert":
                 if pattern == leftPattern {
                     return 2
                 }else if pattern == rightPattern{
@@ -224,29 +205,37 @@ class ViewController: UIViewController {
                 }else{
                     return 5
                 }
-            case "middleHorz":
-                if pattern == leftPattern {
-                    return 4
-                }else if pattern == rightPattern{
-                    return 6
-                }else{
-                    return 5
-                }
-            case "diagLeftRight":
+            case "middleVert":
                 if pattern == leftPattern {
                     return 1
                 }else if pattern == rightPattern{
-                    return 9
+                    return 7
                 }else{
-                    return 5
+                    return 4
                 }
-            case "diagRightLeft":
+            case "middleHorz":
                 if pattern == leftPattern {
                     return 3
                 }else if pattern == rightPattern{
-                    return 7
-                }else{
                     return 5
+                }else{
+                    return 4
+                }
+            case "diagLeftRight":
+                if pattern == leftPattern {
+                    return 0
+                }else if pattern == rightPattern{
+                    return 8
+                }else{
+                    return 4
+                }
+            case "diagRightLeft":
+                if pattern == leftPattern {
+                    return 2
+                }else if pattern == rightPattern{
+                    return 6
+                }else{
+                    return 4
                 }
             
             default:
@@ -255,7 +244,7 @@ class ViewController: UIViewController {
     }
     
     func firstAvailable(#isCorner:Bool) -> Int? {
-        var spots = isCorner ? [1,3,7,9] : [2,4,6,8]
+        var spots = isCorner ? [0,2,6,8] : [1,3,5,7]
         for spot in spots {
             println("checking \(spot)")
             if !isOccupied(spot) {
@@ -279,7 +268,7 @@ class ViewController: UIViewController {
             var whereToPlayResult = whereToPlay(result.location, pattern: result.pattern)
             if !isOccupied(whereToPlayResult) {
                 println("is not occupied")
-                setImageForSpot(whereToPlayResult, player: 0)
+                setImageForSpot(whereToPlayResult, player: .ComputerPlayer)
                 aiDeciding = false
                 checkForWin()
                 return
@@ -289,7 +278,7 @@ class ViewController: UIViewController {
         if let result = rowCheck(value: 1) {
             var whereToPlayResult = whereToPlay(result.location, pattern: result.pattern)
             if !isOccupied(whereToPlayResult) {
-                setImageForSpot(whereToPlayResult, player: 0)
+                setImageForSpot(whereToPlayResult, player: .ComputerPlayer)
                 aiDeciding = false
                 checkForWin()
                 return
@@ -298,19 +287,19 @@ class ViewController: UIViewController {
         //Is center available?
         }
         if !isOccupied(5) {
-            setImageForSpot(5, player: 0)
+            setImageForSpot(5, player: .ComputerPlayer)
             aiDeciding = false
             checkForWin()
             return
         }
         if let cornerAvailable = firstAvailable(isCorner: true){
-            setImageForSpot(cornerAvailable, player: 0)
+            setImageForSpot(cornerAvailable, player: .ComputerPlayer)
             aiDeciding = false
             checkForWin()
             return
         }
         if let sideAvailable = firstAvailable(isCorner: false){
-            setImageForSpot(sideAvailable, player: 0)
+            setImageForSpot(sideAvailable, player: .ComputerPlayer)
             aiDeciding = false
             checkForWin()
             return
@@ -353,9 +342,9 @@ class ViewController: UIViewController {
     
     
     
-    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
-        println("Touch begins \(event)")
-    }
+//    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!) {
+//        println("Touch begins \(event)")
+//    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
