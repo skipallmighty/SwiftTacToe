@@ -286,8 +286,8 @@ class ViewController: UIViewController {
 
         //Is center available?
         }
-        if !isOccupied(5) {
-            setImageForSpot(5, player: .ComputerPlayer)
+        if !isOccupied(4) {
+            setImageForSpot(4, player: .ComputerPlayer)
             aiDeciding = false
             checkForWin()
             return
