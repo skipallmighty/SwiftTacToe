@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  TicTacToe
 //
-//  Created by Jacob Schatz on 6/5/14.
+//  Created by Skip Wilson on 6/5/14.
 //  Copyright (c) 2014 Bisonkick. All rights reserved.
 //
 
