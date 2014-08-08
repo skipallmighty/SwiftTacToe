@@ -55,7 +55,11 @@ class ViewController: UIViewController {
         
         var imageViewTapped = reco.view as UIImageView
         
-        if !plays[imageViewTapped.tag] && !aiDeciding && !done {
+        println(plays[imageViewTapped.tag])
+        println(aiDeciding)
+        println(done)
+        
+        if plays[imageViewTapped.tag] == nil && !aiDeciding && !done {
             setImageForSpot(imageViewTapped.tag, player:.UserPlayer)
         }
         
@@ -73,6 +77,7 @@ class ViewController: UIViewController {
     
     func setImageForSpot(spot:Int,player:Player){
         var playerMark = player == .UserPlayer ? "x" : "o"
+        println("setting spot \(player.toRaw()) spot \(spot)")
         plays[spot] = player.toRaw()
         
         ticTacImages[spot].image = UIImage(named: playerMark)
@@ -114,29 +119,29 @@ class ViewController: UIViewController {
         ticTacImage9.image = nil
     }
     
-    func checkBottom(#value:Int) -> (location:String,pattern:String){
-        return ("bottom",checkFor(value, inList: [6,7,8]))
+    func checkBottom(#value:Int) -> [String]{
+        return ["bottom",checkFor(value, inList: [6,7,8])]
     }
-    func checkMiddleAcross(#value:Int) -> (location:String,pattern:String){
-        return ("middleHorz",checkFor(value, inList: [3,4,5]))
+    func checkMiddleAcross(#value:Int) -> [String]{
+        return ["middleHorz",checkFor(value, inList: [3,4,5])]
     }
-    func checkTop(#value:Int) -> (location:String,pattern:String){
-        return ("top",checkFor(value, inList: [0,1,2]))
+    func checkTop(#value:Int) -> [String]{
+        return ["top",checkFor(value, inList: [0,1,2])]
     }
-    func checkLeft(#value:Int) -> (location:String,pattern:String){
-        return ("left",checkFor(value, inList: [0,3,6]))
+    func checkLeft(#value:Int) -> [String]{
+        return ["left",checkFor(value, inList: [0,3,6])]
     }
-    func checkMiddleDown(#value:Int) -> (location:String,pattern:String){
-        return ("middleVert",checkFor(value, inList: [1,4,7]))
+    func checkMiddleDown(#value:Int) -> [String]{
+        return ["middleVert",checkFor(value, inList: [1,4,7])]
     }
-    func checkRight(#value:Int) -> (location:String,pattern:String){
-        return ("right",checkFor(value, inList: [2,5,8]))
+    func checkRight(#value:Int) ->  [String]{
+        return ["right",checkFor(value, inList: [2,5,8])]
     }
-    func checkDiagLeftRight(#value:Int) -> (location:String,pattern:String){
-        return ("diagRightLeft",checkFor(value, inList: [2,4,6]))
+    func checkDiagLeftRight(#value:Int) ->  [String]{
+        return ["diagRightLeft",checkFor(value, inList: [2,4,6])]
     }
-    func checkDiagRightLeft(#value:Int) -> (location:String,pattern:String){
-        return ("diagLeftRight",checkFor(value, inList: [0,4,8]))
+    func checkDiagRightLeft(#value:Int) ->  [String]{
+        return ["diagLeftRight",checkFor(value, inList: [0,4,8])]
     }
     
     func checkFor(value:Int, inList:[Int]) -> String {
@@ -151,12 +156,18 @@ class ViewController: UIViewController {
         return conclusion
     }
     
-    func rowCheck(#value:Int) -> (location:String,pattern:String)?{
+    func checkThis(#value:Int) -> [String]{
+        return ["right","0"]
+    }
+    
+    func rowCheck(#value:Int) -> [String]?{
         var acceptableFinds = ["011","110","101"]
-        var findFuncs = [checkTop,checkBottom,checkLeft,checkRight,checkMiddleAcross,checkMiddleDown,checkDiagLeftRight,checkDiagRightLeft]
+        var findFuncs = [self.checkThis]
+        var algorthmResults = findFuncs[0](value: value)
         for algorthm in findFuncs {
             var algorthmResults = algorthm(value: value)
-            if find(acceptableFinds,algorthmResults.pattern) {
+            var findPattern = find(acceptableFinds,algorthmResults[1])
+            if findPattern != nil {
                 return algorthmResults
             }
         }
@@ -164,8 +175,11 @@ class ViewController: UIViewController {
     }
     
     func isOccupied(spot:Int) -> Bool {
-        println("occupied \(plays)")
-        return Bool(plays[spot])
+        println("occupied \(spot)")
+        if plays[spot] != nil {
+            return true
+        }
+        return false
     }
     
     func whereToPlay(location:String,pattern:String) -> Int {
@@ -265,9 +279,8 @@ class ViewController: UIViewController {
         //We (the computer) have two in a row
         if let result = rowCheck(value: 0){
             println("comp has two in a row")
-            var whereToPlayResult = whereToPlay(result.location, pattern: result.pattern)
+            var whereToPlayResult = whereToPlay(result[0], pattern: result[1])
             if !isOccupied(whereToPlayResult) {
-                println("is not occupied")
                 setImageForSpot(whereToPlayResult, player: .ComputerPlayer)
                 aiDeciding = false
                 checkForWin()
@@ -276,7 +289,7 @@ class ViewController: UIViewController {
         }
         //They (the player) have two in a row
         if let result = rowCheck(value: 1) {
-            var whereToPlayResult = whereToPlay(result.location, pattern: result.pattern)
+            var whereToPlayResult = whereToPlay(result[0], pattern: result[1])
             if !isOccupied(whereToPlayResult) {
                 setImageForSpot(whereToPlayResult, player: .ComputerPlayer)
                 aiDeciding = false
@@ -311,7 +324,7 @@ class ViewController: UIViewController {
         reset()
         
         println(rowCheck(value: 0))
-        //They have two in a row
+//        They have two in a row
         println(rowCheck(value: 1))
         
 
