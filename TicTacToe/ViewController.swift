@@ -15,19 +15,19 @@ class ViewController: UIViewController {
     }
     
     //MARK: Variables
-    @IBOutlet weak var ticTacImage1: UIImageView!
-    @IBOutlet weak var ticTacImage2: UIImageView!
-    @IBOutlet weak var ticTacImage3: UIImageView!
-    @IBOutlet weak var ticTacImage4: UIImageView!
-    @IBOutlet weak var ticTacImage5: UIImageView!
-    @IBOutlet weak var ticTacImage6: UIImageView!
-    @IBOutlet weak var ticTacImage7: UIImageView!
-    @IBOutlet weak var ticTacImage8: UIImageView!
-    @IBOutlet weak var ticTacImage9: UIImageView!
+    @IBOutlet var ticTacImage1: UIImageView!
+    @IBOutlet var ticTacImage2: UIImageView!
+    @IBOutlet var ticTacImage3: UIImageView!
+    @IBOutlet var ticTacImage4: UIImageView!
+    @IBOutlet var ticTacImage5: UIImageView!
+    @IBOutlet var ticTacImage6: UIImageView!
+    @IBOutlet var ticTacImage7: UIImageView!
+    @IBOutlet var ticTacImage8: UIImageView!
+    @IBOutlet var ticTacImage9: UIImageView!
 
     
-    @IBOutlet weak var resetBtn : UIButton!
-    @IBOutlet weak var userMessage : UILabel!
+    @IBOutlet var resetBtn : UIButton!
+    @IBOutlet var userMessage : UILabel!
     
     var plays = [Int:Int]()
     var done = false
